@@ -7,7 +7,9 @@ import {
 import { spawn } from 'child_process'
 
 const { remote } = window
-const { APPDATA_PATH } = global
+const { APPDATA_PATH, ROOT } = global
+
+const NPM_EXEC_PATH = join(ROOT, 'node_modules', 'npm', 'bin', 'npm-cli.js')
 
 /* eslint-disable no-console */
 const installPackage = fp => {
@@ -18,8 +20,15 @@ const installPackage = fp => {
 
   console.log(`Spawning npm to install ${fp} ...`)
   const p = spawn(
-    'npm',
-    ['install', fp],
+    NPM_EXEC_PATH,
+    [
+      'install',
+      '--no-progress',
+      '--global-style',
+      '--ignore-scripts',
+      '--legacy-peer-deps',
+      fp,
+    ],
     {cwd: join(APPDATA_PATH, 'plugins')}
   )
   let pOut = ''
@@ -30,7 +39,7 @@ const installPackage = fp => {
 
   p.on('close', code => {
     console.log(`Exited (${code})`)
-    if (code !== 0) {
+    if (true) {
       console.warn('stdout:')
       console.warn(pOut)
       console.warn('stderr:')
